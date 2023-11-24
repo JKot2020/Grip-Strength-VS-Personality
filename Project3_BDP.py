@@ -32,6 +32,9 @@ def load_data():
     
     # create dataframe
     data_combined = pd.DataFrame(survey_data)
+
+    # @TODO
+    # determine and drop outliers
     
     # create and calculate means of personality traits
         # Fearfulness: hex_5, hex_29, hex_53, hex_77
@@ -51,5 +54,20 @@ def load_data():
 # load tata
 data_combined = load_data()
 data_combined
+
+###############################################################################
+
+# @TODO
+# generate regression model
+
+###############################################################################
+
+# @TODO
+# generate predictive model
+
+###############################################################################
+
+# @TODO
+# generate regression model
 
 ###############################################################################
