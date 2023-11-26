@@ -64,6 +64,13 @@ data_combined
 male_data = data_combined[data_combined['female']==0].reset_index(drop=True)
 female_data = data_combined[data_combined['female']==1].reset_index(drop=True)
 
+# boxplot
+grip_box = sns.boxplot(x='female', y='grip',
+                       data=data_combined).set(title='Grip Strength by Sex')
+plt.xlabel('Sex')
+plt.ylabel('Grip Strength')
+plt.show(grip_box)
+
 ###############################################################################
 
 # @TODO
