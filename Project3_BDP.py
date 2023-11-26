@@ -58,6 +58,15 @@ data_combined
 ###############################################################################
 
 # @TODO
+# generate graphs visualizing data
+
+# separate male and female data points
+male_data = data_combined[data_combined['female']==0].reset_index(drop=True)
+female_data = data_combined[data_combined['female']==1].reset_index(drop=True)
+
+###############################################################################
+
+# @TODO
 # generate regression model
 
 ###############################################################################
