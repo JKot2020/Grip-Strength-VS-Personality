@@ -97,6 +97,16 @@ plt.show(emo_hist)
 
 ###############################################################################
 
+# generate Tukey's 5-Number summary
+
+tukey_combined = data_combined.describe()
+tukey_male = data_male.describe()
+tukey_female = data_female.describe()
+
+tukey_combined, tukey_male, tukey_female
+
+###############################################################################
+
 # generate regression model
 
 # display OLS results (combined)
