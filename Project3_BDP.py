@@ -68,7 +68,7 @@ data_female = data_combined[data_combined['female']==1].reset_index(drop=True)
 grip_box = sns.boxplot(x='female', y='grip',
                        data=data_combined).set(title='Grip Strength by Sex')
 plt.xlabel('Sex')
-plt.ylabel('Grip Strength')
+plt.ylabel('Grip Strength (kg/F)')
 plt.show(grip_box)
 
 # histogram of fearfulness
