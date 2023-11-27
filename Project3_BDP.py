@@ -60,7 +60,6 @@ data_combined
 
 ###############################################################################
 
-# @TODO
 # generate graphs visualizing data
 
 # separate male and female data points
@@ -133,6 +132,14 @@ res = mod.fit()
 print(res.params)
 print(res.summary())
 
+# plot data and best-fit line (age)
+age_corr = sns.lmplot(x="grip", y="age", data=data_combined).set(title="Correlation Grip vs Age")
+plt.show(age_corr)
+
+# plot data and best-fit line (sentimentality)
+sent_corr = sns.lmplot(x="grip", y="sent_mean", data=data_combined).set(title="Correlation Grip vs Sentimentality")
+plt.show(sent_corr)
+
 # display OLS results (male)
 mod = smf.ols(formula = "grip ~ age + ethnicity + fear_mean + anx_mean + sent_mean + emo_mean",
               data = data_male.dropna())
@@ -147,9 +154,12 @@ res = mod.fit()
 print(res.params)
 print(res.summary())
 
+# covariance
+grip_cov = sns.lmplot(x="grip", y="sent_mean", hue="female", data=data_combined).set(title="Correlation Grip vs Sentimentality")
+plt.show(grip_cov)
+
 ###############################################################################
 
-# @TODO
 # generate predictive model
 
 # model prediction
