@@ -60,6 +60,10 @@ data_combined
 # @TODO
 # generate graphs visualizing data
 
+# separate male and female data points
+data_male = data_combined[data_combined['female']==0].reset_index(drop=True)
+data_female = data_combined[data_combined['female']==1].reset_index(drop=True)
+
 # boxplot
 grip_box = sns.boxplot(x='female', y='grip',
                        data=data_combined).set(title='Grip Strength by Sex')
@@ -70,10 +74,6 @@ plt.show(grip_box)
 ###############################################################################
 
 # generate regression model
-
-# separate male and female data points
-data_male = data_combined[data_combined['female']==0].reset_index(drop=True)
-data_female = data_combined[data_combined['female']==1].reset_index(drop=True)
 
 # display OLS results (combined)
 pd.options.display.max_rows = 20
