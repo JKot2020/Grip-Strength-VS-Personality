@@ -85,8 +85,6 @@ print(res.params)
 print(res.summary())
 
 # display OLS results (male)
-pd.options.display.max_rows = 20
-import statsmodels.formula.api as smf
 mod = smf.ols(formula = "grip ~ age + ethnicity + fear_mean + anx_mean + sent_mean + emo_mean",
               data = data_male.dropna())
 res = mod.fit()
@@ -94,8 +92,6 @@ print(res.params)
 print(res.summary())
 
 # display OLS results (female)
-pd.options.display.max_rows = 20
-import statsmodels.formula.api as smf
 mod = smf.ols(formula = "grip ~ age + ethnicity + fear_mean + anx_mean + sent_mean + emo_mean",
               data = data_female.dropna())
 res = mod.fit()
