@@ -34,7 +34,7 @@ def load_data():
     data_combined = pd.DataFrame(survey_data)
 
     # drop outliers
-    data_combined = data_combined.drop(62)
+    data_combined = data_combined.drop(62).reset_index(drop=True)
     
     # create and calculate means of personality traits
         # Fearfulness: hex_5, hex_29, hex_53, hex_77
@@ -60,6 +60,10 @@ data_combined
 # @TODO
 # generate graphs visualizing data
 
+# separate male and female data points
+data_male = data_combined[data_combined['female']==0].reset_index(drop=True)
+data_female = data_combined[data_combined['female']==1].reset_index(drop=True)
+
 # boxplot
 grip_box = sns.boxplot(x='female', y='grip',
                        data=data_combined).set(title='Grip Strength by Sex')
@@ -67,13 +71,43 @@ plt.xlabel('Sex')
 plt.ylabel('Grip Strength')
 plt.show(grip_box)
 
+# histogram of fearfulness
+fear_hist = sns.histplot(data=data_combined["fear_mean"], bins=12, color='purple').set(title='Personality Rating: Fearfulness')
+plt.xlabel('Feafulness Rating (Mean)')
+plt.ylabel('Frequency')
+plt.show(fear_hist)
+
+# histogram of anxiety
+anx_hist = sns.histplot(data=data_combined["anx_mean"], bins=12, color='red').set(title='Personality Rating: Anxiety')
+plt.xlabel('Anxiety Rating (Mean)')
+plt.ylabel('Frequency')
+plt.show(anx_hist)
+
+# histogram of sentimentality
+sent_hist = sns.histplot(data=data_combined["sent_mean"], bins=12, color='green').set(title='Personality Rating: Sentimentality')
+plt.xlabel('Sentimentality Rating (Mean)')
+plt.ylabel('Frequency')
+plt.show(sent_hist)
+
+# histogram of emotional dependence
+emo_hist = sns.histplot(data=data_combined["emo_mean"], bins=12, color='yellow').set(title='Personality Rating: Emotional Dependence')
+plt.xlabel('Emotion Dependence Rating (Mean)')
+plt.ylabel('Frequency')
+plt.show(emo_hist)
+
+###############################################################################
+
+# generate Tukey's 5-Number summary
+
+tukey_combined = data_combined.describe()
+tukey_male = data_male.describe()
+tukey_female = data_female.describe()
+
+tukey_combined, tukey_male, tukey_female
+
 ###############################################################################
 
 # generate regression model
-
-# separate male and female data points
-data_male = data_combined[data_combined['female']==0].reset_index(drop=True)
-data_female = data_combined[data_combined['female']==1].reset_index(drop=True)
 
 # display OLS results (combined)
 pd.options.display.max_rows = 20
