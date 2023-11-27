@@ -191,8 +191,9 @@ yP_train = np.asarray(y2_pred_train > 0.5, dtype=int)
 
 diff_train = yT_train - yP_train
 accuracy_train = (1 - np.sum(np.abs(diff_train)) / len(diff_train)) * 100
+
 print('Train Sample Size:', nTrain)
-print('Peek the Prediction Diff:', diff_train[:10])
+print('Prediction Diff:', diff_train[:10])
 print('Accuracy:', accuracy_train)
 print('Total Prediction:', len(diff_train))
 print('False Negatives (True=0):', np.sum(diff_train < 0))
