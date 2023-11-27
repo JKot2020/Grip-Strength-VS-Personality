@@ -70,13 +70,13 @@ data_female = data_combined[data_combined['female']==1].reset_index(drop=True)
 grip_box = sns.boxplot(x='ethnicity', y='grip',
                        data=data_combined).set(title='Grip Strength by Ethnicity')
 plt.xlabel('Ethnicity')
-plt.ylabel('Grip Strength')
+plt.ylabel('Grip Strength (kg/F)')
 plt.show()
 
 grip_box = sns.boxplot(x='age', y='grip',
                        data=data_combined).set(title='Grip Strength by Age')
 plt.xlabel('Age')
-plt.ylabel('Grip Strength')
+plt.ylabel('Grip Strength (kg/F)')
 plt.show()
 
 # boxplot
