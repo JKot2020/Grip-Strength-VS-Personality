@@ -60,10 +60,6 @@ data_combined
 # @TODO
 # generate graphs visualizing data
 
-# separate male and female data points
-male_data = data_combined[data_combined['female']==0].reset_index(drop=True)
-female_data = data_combined[data_combined['female']==1].reset_index(drop=True)
-
 # boxplot
 grip_box = sns.boxplot(x='female', y='grip',
                        data=data_combined).set(title='Grip Strength by Sex')
@@ -73,17 +69,42 @@ plt.show(grip_box)
 
 ###############################################################################
 
-# @TODO
 # generate regression model
+
+# separate male and female data points
+data_male = data_combined[data_combined['female']==0].reset_index(drop=True)
+data_female = data_combined[data_combined['female']==1].reset_index(drop=True)
+
+# display OLS results (combined)
+pd.options.display.max_rows = 20
+import statsmodels.formula.api as smf
+mod = smf.ols(formula = "grip ~ age + female + ethnicity + fear_mean + anx_mean + sent_mean + emo_mean",
+              data = data_combined.dropna())
+res = mod.fit()
+print(res.params)
+print(res.summary())
+
+# display OLS results (male)
+pd.options.display.max_rows = 20
+import statsmodels.formula.api as smf
+mod = smf.ols(formula = "grip ~ age + ethnicity + fear_mean + anx_mean + sent_mean + emo_mean",
+              data = data_male.dropna())
+res = mod.fit()
+print(res.params)
+print(res.summary())
+
+# display OLS results (female)
+pd.options.display.max_rows = 20
+import statsmodels.formula.api as smf
+mod = smf.ols(formula = "grip ~ age + ethnicity + fear_mean + anx_mean + sent_mean + emo_mean",
+              data = data_female.dropna())
+res = mod.fit()
+print(res.params)
+print(res.summary())
 
 ###############################################################################
 
 # @TODO
 # generate predictive model
-
-###############################################################################
-
-# @TODO
-# generate regression model
 
 ###############################################################################
