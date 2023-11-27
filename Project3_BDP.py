@@ -34,7 +34,7 @@ def load_data():
     data_combined = pd.DataFrame(survey_data)
 
     # drop outliers
-    data_combined = data_combined.drop(62)
+    data_combined = data_combined.drop(62).reset_index(drop=True)
     
     # create and calculate means of personality traits
         # Fearfulness: hex_5, hex_29, hex_53, hex_77
