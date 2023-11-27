@@ -71,6 +71,30 @@ plt.xlabel('Sex')
 plt.ylabel('Grip Strength')
 plt.show(grip_box)
 
+# histogram of fearfulness
+fear_hist = sns.histplot(data=data_combined["fear_mean"], bins=12, color='purple').set(title='Personality Rating: Fearfulness')
+plt.xlabel('Feafulness Rating (Mean)')
+plt.ylabel('Frequency')
+plt.show(fear_hist)
+
+# histogram of anxiety
+anx_hist = sns.histplot(data=data_combined["anx_mean"], bins=12, color='red').set(title='Personality Rating: Anxiety')
+plt.xlabel('Anxiety Rating (Mean)')
+plt.ylabel('Frequency')
+plt.show(anx_hist)
+
+# histogram of sentimentality
+sent_hist = sns.histplot(data=data_combined["sent_mean"], bins=12, color='green').set(title='Personality Rating: Sentimentality')
+plt.xlabel('Sentimentality Rating (Mean)')
+plt.ylabel('Frequency')
+plt.show(sent_hist)
+
+# histogram of emotional dependence
+emo_hist = sns.histplot(data=data_combined["emo_mean"], bins=12, color='yellow').set(title='Personality Rating: Emotional Dependence')
+plt.xlabel('Emotion Dependence Rating (Mean)')
+plt.ylabel('Frequency')
+plt.show(emo_hist)
+
 ###############################################################################
 
 # generate regression model
