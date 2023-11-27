@@ -33,8 +33,8 @@ def load_data():
     # create dataframe
     data_combined = pd.DataFrame(survey_data)
 
-    # @TODO
-    # determine and drop outliers
+    # drop outliers
+    data_combined = data_combined.drop(62)
     
     # create and calculate means of personality traits
         # Fearfulness: hex_5, hex_29, hex_53, hex_77
@@ -46,8 +46,8 @@ def load_data():
     data_combined['sent_mean'] = data_combined['hex_17'].add(data_combined['hex_41']).add(data_combined['hex_65']).add(data_combined['hex_89']).div(4)
     data_combined['emo_mean'] = data_combined['hex_23'].add(data_combined['hex_47']).add(data_combined['hex_71']).add(data_combined['hex_95']).div(4)
     
-    # clean up unused hex columns
-    data_combined.drop(['hex_5', 'hex_29', 'hex_53', 'hex_77', 'hex_11', 'hex_35', 'hex_59', 'hex_83', 'hex_17', 'hex_41', 'hex_65', 'hex_89', 'hex_23', 'hex_47', 'hex_71', 'hex_95'], axis=1, inplace=True)
+    # clean up unused columns
+    data_combined.drop(['p_id', 'hex_5', 'hex_29', 'hex_53', 'hex_77', 'hex_11', 'hex_35', 'hex_59', 'hex_83', 'hex_17', 'hex_41', 'hex_65', 'hex_89', 'hex_23', 'hex_47', 'hex_71', 'hex_95'], axis=1, inplace=True)
     
     return data_combined
 
