@@ -66,6 +66,12 @@ data_combined
 data_male = data_combined[data_combined['female']==0].reset_index(drop=True)
 data_female = data_combined[data_combined['female']==1].reset_index(drop=True)
 
+# histogram to display age ranges
+age_hist = sns.histplot(data=data_combined['age'], bins=11).set(title='Age Range')
+plt.xlabel('Age')
+plt.ylabel('Frequency')
+plt.show(age_hist)
+
 grip_box = sns.boxplot(x='ethnicity', y='grip',
                        data=data_combined).set(title='Grip Strength by Ethnicity')
 plt.xlabel('Ethnicity')
