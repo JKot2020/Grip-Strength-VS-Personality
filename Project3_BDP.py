@@ -72,6 +72,12 @@ plt.xlabel('Age')
 plt.ylabel('Frequency')
 plt.show(age_hist)
 
+# pie chart to display sex
+sex_count = [164, 140]
+sex_name = ['Male','Female']
+plt.pie(sex_count, labels=sex_name, autopct='%1.0f%%')
+plt.show()
+
 grip_box = sns.boxplot(x='ethnicity', y='grip',
                        data=data_combined).set(title='Grip Strength by Ethnicity')
 plt.xlabel('Ethnicity')
