@@ -60,42 +60,31 @@ data_combined
 
 ###############################################################################
 
+# @TODO
 # generate graphs visualizing data
 
 # separate male and female data points
 data_male = data_combined[data_combined['female']==0].reset_index(drop=True)
 data_female = data_combined[data_combined['female']==1].reset_index(drop=True)
 
-# histogram to display age ranges
-age_hist = sns.histplot(data=data_combined['age'], bins=11).set(title='Age Range')
-plt.xlabel('Age')
-plt.ylabel('Frequency')
-plt.show(age_hist)
-
-# pie chart to display sex
-sex_count = [164, 140]
-sex_name = ['Male','Female']
-plt.pie(sex_count, labels=sex_name, autopct='%1.0f%%')
-plt.show()
-
 grip_box = sns.boxplot(x='ethnicity', y='grip',
                        data=data_combined).set(title='Grip Strength by Ethnicity')
 plt.xlabel('Ethnicity')
-plt.ylabel('Grip Strength (kg/F)')
+plt.ylabel('Grip Strength')
 plt.show()
 
 grip_box = sns.boxplot(x='age', y='grip',
                        data=data_combined).set(title='Grip Strength by Age')
 plt.xlabel('Age')
-plt.ylabel('Grip Strength (kg/F)')
+plt.ylabel('Grip Strength')
 plt.show()
 
 # boxplot
 grip_box = sns.boxplot(x='female', y='grip',
                        data=data_combined).set(title='Grip Strength by Sex')
-plt.xlabel('Sex')
-plt.ylabel('Grip Strength (kg/F)')
-plt.show(grip_box)
+plt.xlabel('Sex (0 = male, 1 = female)')
+plt.ylabel('Grip Strength')
+plt.show()
 
 # histogram of fearfulness
 fear_hist = sns.histplot(data=data_combined["fear_mean"], bins=12, color='purple').set(title='Personality Rating: Fearfulness')
@@ -144,14 +133,6 @@ res = mod.fit()
 print(res.params)
 print(res.summary())
 
-# plot data and best-fit line (age)
-age_corr = sns.lmplot(x="grip", y="age", data=data_combined).set(title="Correlation Grip vs Age")
-plt.show(age_corr)
-
-# plot data and best-fit line (sentimentality)
-sent_corr = sns.lmplot(x="grip", y="sent_mean", data=data_combined).set(title="Correlation Grip vs Sentimentality")
-plt.show(sent_corr)
-
 # display OLS results (male)
 mod = smf.ols(formula = "grip ~ age + ethnicity + fear_mean + anx_mean + sent_mean + emo_mean",
               data = data_male.dropna())
@@ -166,59 +147,210 @@ res = mod.fit()
 print(res.params)
 print(res.summary())
 
-# covariance
-grip_cov = sns.lmplot(x="grip", y="sent_mean", hue="female", data=data_combined).set(title="Correlation Grip vs Sentimentality")
-plt.show(grip_cov)
 
 ###############################################################################
 
-# generate predictive model
+# @TODO
+# generate anxiety predictive model
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.ensemble import RandomForestRegressor
 
-# model prediction
-y2, X_model2 = dmatrices("female ~ grip + np.log(age) + ethnicity + fear_mean + anx_mean + sent_mean + emo_mean", data_combined, return_type='dataframe')
-model2 = sm.OLS(y2, X_model2)
-results2 = model2.fit()
-y2_pred = results2.predict(X_model2)
-print(y2.shape, X_model2.shape)
-print('y2 = ', y2[:10])
-print('y2_pred=', y2_pred[:10])
+# features and target for: Anxiety
+anx_features = ['anx_mean', 'age','ethnicity','female']
+target = 'grip'
 
-yT = np.asarray(y2['female'], dtype=int)
-yP = np.asarray(y2_pred > 0.5, dtype=int)
+# seperation of features and target
+X = data_combined[anx_features]
+y = data_combined[target]
 
-diff = yT - yP
-from sklearn.metrics import accuracy_score
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
-accuracy = accuracy_score(yT, yP) * 100
-print('Prediction Accuracy:', accuracy)
-print('False Negatives (True=0):', np.sum(diff < 0))
-print('False Positives:', np.sum(diff > 0))
+# create anx_model using the RandomForestRegressor model
+anx_model = RandomForestRegressor(n_estimators=100, max_depth=2, min_samples_split=3, min_samples_leaf=2, random_state=42)
 
-# plot predicted values and true values
-fig, ax = plt.subplots()
-ax.plot(np.arange(len(yT)), yT - yP, "+", label="True-Predict")
+# train the anx_model
+anx_model.fit(X_train, y_train)
+
+# creating predictions
+y_pred = anx_model.predict(X_test)
+
+# calculate MSE and r2 value
+mse = mean_squared_error(y_test, y_pred)
+r2 = r2_score(y_test, y_pred)
+
+print(f'MSE: {mse}')
+print(f'R-squared: {r2 * 100}')
+
+# scatter plot for actual vs predicted grip strength for on anx_mean
+plt.scatter(X_test['anx_mean'], y_test, label='Actual Values')
+sorted_indices = X_test['anx_mean'].squeeze().argsort()
+plt.scatter(X_test['anx_mean'].iloc[sorted_indices], y_pred[sorted_indices], label='Predicted Values')
+plt.title('Actual vs Predicted Grip Strength (Anxiety)')
+plt.xlabel('Anxiety Mean')
+plt.ylabel('Grip Strength')
+plt.legend()
 plt.show()
 
-y, X_model = dmatrices("female ~ grip + np.log(age) + ethnicity + fear_mean + anx_mean + sent_mean + emo_mean", data_combined, return_type='dataframe')
-print('Total Sample Size:', len(y))
+###############################################################################
 
-nTrain = int(len(y) * 0.6)
+# Predicition Model for fear_mean
 
-model_train = sm.Logit(y['female'][:nTrain], X_model[:nTrain])
-results_train = model_train.fit(disp=0)
-y2_pred_train = results_train.predict(X_model[nTrain:])
+# features and target for: Fearfulness
+fear_features = ['fear_mean', 'age','ethnicity','female']
+target = 'grip'
 
-yT_train = y['female'].iloc[nTrain:]
-yP_train = np.asarray(y2_pred_train > 0.5, dtype=int)
+# seperation of features and target
+X = data_combined[fear_features]
+y = data_combined[target]
 
-diff_train = yT_train - yP_train
-accuracy_train = (1 - np.sum(np.abs(diff_train)) / len(diff_train)) * 100
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
-print('Train Sample Size:', nTrain)
-print('Prediction Diff:', diff_train[:10])
-print('Accuracy:', accuracy_train)
-print('Total Prediction:', len(diff_train))
-print('False Negatives (True=0):', np.sum(diff_train < 0))
-print('False Positives:', np.sum(diff_train > 0))
+# create fear_model using the RandomForestRegressor model
+fear_model = RandomForestRegressor(n_estimators=100, max_depth=2, min_samples_split=3, min_samples_leaf=2, random_state=42)
+
+# train the fear_model
+fear_model.fit(X_train, y_train)
+
+# creating predictions
+y_pred = fear_model.predict(X_test)
+
+# calculate MSE and r2 value
+mse = mean_squared_error(y_test, y_pred)
+r2 = r2_score(y_test, y_pred)
+
+print(f'MSE: {mse}')
+print(f'R-squared: {r2 * 100}')
+
+# scatter plot for actual vs predicted grip strength for on fear_mean
+plt.scatter(X_test['fear_mean'], y_test, label='Actual Values')
+sorted_indices = X_test['fear_mean'].squeeze().argsort()
+plt.scatter(X_test['fear_mean'].iloc[sorted_indices], y_pred[sorted_indices], label='Predicted Values')
+plt.title('Actual vs Predicted Grip Strength (Fearfulness)')
+plt.xlabel('Fearfulness Mean')
+plt.ylabel('Grip Strength')
+plt.legend()
+plt.show()
 
 ###############################################################################
+
+# Predicition Model for sent_mean
+
+# features and target for: Sentimentality
+sent_features = ['sent_mean', 'age','ethnicity','female']
+target = 'grip'
+
+# seperation of features and target
+X = data_combined[sent_features]
+y = data_combined[target]
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# create sent_model using the RandomForestRegressor model
+sent_model = RandomForestRegressor(n_estimators=100, max_depth=2, min_samples_split=3, min_samples_leaf=2, random_state=42)
+
+# train the sent_model
+sent_model.fit(X_train, y_train)
+
+# creating predictions
+y_pred = sent_model.predict(X_test)
+
+# calculate MSE and r2 value
+mse = mean_squared_error(y_test, y_pred)
+r2 = r2_score(y_test, y_pred)
+
+print(f'MSE: {mse}')
+print(f'R-squared: {r2 * 100}')
+
+# scatter plot for actual vs predicted grip strength for on sent_mean
+plt.scatter(X_test['sent_mean'], y_test, label='Actual Values')
+sorted_indices = X_test['sent_mean'].squeeze().argsort()
+plt.scatter(X_test['sent_mean'].iloc[sorted_indices], y_pred[sorted_indices], label='Predicted Values')
+plt.title('Actual vs Predicted Grip Strength (Sentimentality)')
+plt.xlabel('Sentimentality Mean')
+plt.ylabel('Grip Strength')
+plt.legend()
+plt.show()
+
+###############################################################################
+
+# Predicition Model for emo_mean
+
+# features and target for: Emotional Dependency
+emo_features = ['emo_mean', 'age','ethnicity','female']
+target = 'grip'
+
+# seperation of features and target
+X = data_combined[emo_features]
+y = data_combined[target]
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# create emo_model using the RandomForestRegressor model
+emo_model = RandomForestRegressor(n_estimators=100, max_depth=2, min_samples_split=3, min_samples_leaf=2, random_state=42)
+
+# train the emo_model
+emo_model.fit(X_train, y_train)
+
+# creating predictions
+y_pred = emo_model.predict(X_test)
+
+# calculate MSE and r2 value
+mse = mean_squared_error(y_test, y_pred)
+r2 = r2_score(y_test, y_pred)
+
+print(f'MSE: {mse}')
+print(f'R-squared: {r2 * 100}')
+
+# scatter plot for actual vs predicted grip strength for on emo_mean
+plt.scatter(X_test['emo_mean'], y_test, label='Actual Values')
+sorted_indices = X_test['emo_mean'].squeeze().argsort()
+plt.scatter(X_test['emo_mean'].iloc[sorted_indices], y_pred[sorted_indices], label='Predicted Values')
+plt.title('Actual vs Predicted Grip Strength (Emotional Dependency)')
+plt.xlabel('Emotional Dependency Mean')
+plt.ylabel('Grip Strength')
+plt.legend()
+plt.show()
+
+###############################################################################
+
+# Predicition Model for Combined Personal Inventory
+
+# features and target for: Combined Personal Inventory
+combined_features = ['fear_mean', 'anx_mean', 'sent_mean', 'emo_mean', 'age', 'ethnicity', 'female']
+target = 'grip'
+
+# seperation of features and target
+X = data_combined[combined_features]
+y = data_combined[target]
+
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+
+# create combined_model using the RandomForestRegressor model
+combined_model = RandomForestRegressor(n_estimators=100, max_depth=2, min_samples_split=3, min_samples_leaf=2, random_state=42)
+
+# train the combined_model
+combined_model.fit(X_train, y_train)
+
+# creating predictions
+y_pred = combined_model.predict(X_test)
+
+# calculate MSE and r2 value
+mse = mean_squared_error(y_test, y_pred)
+r2 = r2_score(y_test, y_pred)
+
+print(f'MSE: {mse}')
+print(f'R-squared: {r2 * 100}')
+
+# calculate mean for all means test set
+X_test['combined_mean'] = X_test[['fear_mean', 'anx_mean', 'sent_mean', 'emo_mean']].mean(axis=1)
+
+# scatter plot for actual vs predicted grip strength for all means
+plt.scatter(X_test['combined_mean'], y_test, label='Actual Values')
+sorted_indices = X_test['combined_mean'].squeeze().argsort()
+plt.scatter(X_test['combined_mean'].iloc[sorted_indices], y_pred[sorted_indices], label='Predicted Values')
+plt.title('Actual vs Predicted Grip Strength (Combined Personal Inventory)')
+plt.xlabel('Combined Personal Inventory of All Means')
+plt.ylabel('Grip Strength')
+plt.legend()
+plt.show()
