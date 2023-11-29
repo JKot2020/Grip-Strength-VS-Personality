@@ -11,7 +11,6 @@ import scipy as sp
 import seaborn as sns
 import statsmodels.api as sm
 import statsmodels.formula.api as smf
-from patsy import dmatrices, dmatrix
 plt.rc("figure", figsize=(10, 6))
 rm = np.random.default_rng(10) # 10 randome seed
 
